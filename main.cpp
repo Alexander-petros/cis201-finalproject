@@ -1,3 +1,10 @@
+/*
+ *File: Main.cpp
+ *Developer: Alexander Petros
+ *Email: Petrtosa@student.vvc.edu
+ *Description: This program will find words inside of a text document then display all words with their word 
+ *counts and line numbers
+*/
 #include <iostream>
 #include <fstream>
 #include <ostream>
