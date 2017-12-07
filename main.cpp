@@ -3,44 +3,51 @@
 #include <ostream>
 #include <string>
 #include <vector>
+
 using namespace std;
 
 class Words
 {
 public:
+    //constructs word class
     Words(vector<char> c, int i)
     {
        set_string(c);
-       add_count();
        set_linecount(i);
     }
+    //Sets the word in the string
     void set_string(vector<char> s)
     {
        string x(s.data(), s.size());
         word = x;
     }
-    void add_count()
-    {
-        count++;
-    }
-    char check_char(int i)
-    {
-       return word.at(i);
-    }
+    //Returns the word
     string return_word()
     {
        return word;
     }
+    //Stores place where lines are at
     void set_linecount(int i)
     {
        at_line.push_back(i);
     }
+    //returns linecount
     void return_linecount()
     {
        for (int i = 0; i < at_line.size(); i++)
        {
           cout << at_line[i] << " ";
        }
+    }
+    //Returns how many times a word appears
+    int return_count()
+    {
+       count = 0;
+       for (int i = 0; i < at_line.size(); i++)
+       {
+          count++;
+       }
+       return count;
     }
 
 
@@ -49,14 +56,16 @@ private:
     int count;
     vector<int> at_line;
 };
+//Reads all words in vector
 void read_all (vector<Words> w)
 {
-   for (int i = 0; i <=  w.size(); i++)
+   for (int i = 0; i <  w.size(); i++)
    {
-      cout << "The word is: " << w[i].return_word() << endl;
-      cout << "And it is located at lines: "; 
+      cout << w[i].return_word() << " : "; 
+      cout << w[i].return_count(); 
+      cout << " : ";
       w[i].return_linecount();
-      cout << endl;
+      cout << " " << endl;
   }
 }
 int main ()
@@ -64,61 +73,60 @@ int main ()
     string line;
     char buffer;
     bool new_word = true;
-    int wordcount = 0;
+    int wordcount = 0, line_count = 0, num = 0;
     vector<Words> w;
     vector<char> c;
-    int line_count = 0;
-    int num = 0;
     ifstream alice;
     alice.open ("alice.txt");
     if (alice.is_open())
     {
         while (alice.get(buffer) )
         {
-           if ( (buffer <= 47 && buffer != 32) || (buffer >= 94 && buffer <= 96) || (buffer >= 58 && buffer <= 64) ||
-              buffer == '\n')
+           if (alice.eof() == true)
+              {
+                 break; //forces program to break in case while loop does not
+              }
+           if ( (buffer <= 47 && buffer != 32 && buffer != 10) || (buffer >= 94 && buffer <= 96) || (buffer >= 58 && buffer <= 64))
               //Detects if it is any punctuation and ignores it
            {
-              if (buffer == '\n')
-              {
-                 cout << "New Line";
-                 line_count++;
-              }
            }
            else
            {
-               if (buffer != 32)
+               if (buffer == '\n')
                {
-                 c.push_back(tolower(buffer));
-                 //cout << c[num];
-                 num++;
+                 buffer = 32;
+                 c.push_back(buffer); //Detects if it is newline and forces it to become a space
+                 line_count++;
+               }
+               if ( buffer != 32)
+               {
+                  c.push_back(tolower(buffer)); //Adds letter to vector
+                  num++;
+                  
                }
                else 
                {
-                Words * word = new Words(c, line_count);
-                c.clear();
-                for ( int i = 0; i < w.size(); i++)
+                Words * word = new Words(c, line_count); //Constructs a new word 
+                c.clear(); //Clears word so new words can be stored
+                for ( int i = 0; i < w.size(); i++) //Goes for the entire size of the word
                 {
-                   if ( w[i].return_word() == word->return_word())
+                   if ( w[i].return_word() == word->return_word()) //If the word exists then it skips that word
                       {
-                         w[i].add_count();
-                         w[i].set_linecount(line_count);
+                         w[i].set_linecount(line_count); //increments the lines that they are found on
                          new_word = false;
-                         cout << "Old Word" << endl;
-                         delete word;
+                         delete word; //frees up data that is used
                          break;
                       }
                    else
                    {
-                      new_word = true;
+                      new_word = true; //confirms there is a new word
                    }
                 }
                 if (new_word == true)
                 {
-                   cout << "New Word" << word->return_word() << endl;
-                   w.push_back(*word);
+                   w.push_back(*word); //if it actually is a new word then it adds to the vector
                 }
-                num = 0;
+                num = 0; //Sets the 'pointer' back to the beginning of the word
               }
            }
         }
@@ -128,6 +136,6 @@ int main ()
     {
         cout << "Unable to open file";
     }
-    read_all(w);
+    read_all(w); //reads the file
     return 0;
 }
