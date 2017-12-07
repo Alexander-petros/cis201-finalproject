@@ -8,10 +8,11 @@ using namespace std;
 class Words
 {
 public:
-    Words(vector<char> c)
+    Words(vector<char> c, int i)
     {
        set_string(c);
        add_count();
+       set_linecount(i);
     }
     void set_string(vector<char> s)
     {
@@ -30,6 +31,17 @@ public:
     {
        return word;
     }
+    void set_linecount(int i)
+    {
+       at_line.push_back(i);
+    }
+    void return_linecount()
+    {
+       for (int i = 0; i < at_line.size(); i++)
+       {
+          cout << at_line[i] << " ";
+       }
+    }
 
 
 private:
@@ -37,16 +49,15 @@ private:
     int count;
     vector<int> at_line;
 };
-bool check_word (vector<Words> w, vector<char> word)
-{
-   return false;
-}
 void read_all (vector<Words> w)
 {
    for (int i = 0; i <=  w.size(); i++)
    {
-      cout << w[i].return_word() << endl;
-   }
+      cout << "The word is: " << w[i].return_word() << endl;
+      cout << "And it is located at lines: "; 
+      w[i].return_linecount();
+      cout << endl;
+  }
 }
 int main ()
 {
@@ -64,13 +75,19 @@ int main ()
     {
         while (alice.get(buffer) )
         {
-           if ( (buffer <= 47 && buffer != 32) || (buffer >= 94 && buffer <= 96) || (buffer >= 58 && buffer <= 64))
+           if ( (buffer <= 47 && buffer != 32) || (buffer >= 94 && buffer <= 96) || (buffer >= 58 && buffer <= 64) ||
+              buffer == '\n')
               //Detects if it is any punctuation and ignores it
            {
+              if (buffer == '\n')
+              {
+                 cout << "New Line";
+                 line_count++;
+              }
            }
            else
            {
-               if (buffer != 32)// && check_word(w,c) == true)
+               if (buffer != 32)
                {
                  c.push_back(tolower(buffer));
                  //cout << c[num];
@@ -78,13 +95,14 @@ int main ()
                }
                else 
                {
-                Words * word = new Words(c);
-                //cout << word->return_word() << endl;
+                Words * word = new Words(c, line_count);
                 c.clear();
                 for ( int i = 0; i < w.size(); i++)
                 {
                    if ( w[i].return_word() == word->return_word())
                       {
+                         w[i].add_count();
+                         w[i].set_linecount(line_count);
                          new_word = false;
                          cout << "Old Word" << endl;
                          delete word;
@@ -102,7 +120,7 @@ int main ()
                 }
                 num = 0;
               }
-            }
+           }
         }
         alice.close();
     }
